@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  bwi_system_s_ros2:
+    runtime: nvidia
+    image: bwi_system_i_ros2
+    # privileged: true
+    group_add:
+      - dialout
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - base_env/v2_env
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - NVIDIA_VISIBLE_DEVICES=all
+      - QT_X11_NO_MITSHM=1
+      #- PULSE_SERVER=unix:/run/user/$UID/pulse/native
+    container_name: bwi_system_c_ros2
+    # this is set bc of errors with RViz being denied dbus comm w/ host
+    security_opt:
+      - apparmor:unconfined
+    volumes: # volumes allow persistent data on the host
+      - ./projects:/root/projects
+      - ./base_env:/root/base_env
+      - ${HOME}/.Xauthority:/root/.Xauthority:rw
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      #- /run/user/$UID/pulse:/run/user/$UID/pulse
+      #- /dev/snd:/dev/snd 
+    working_dir: /root/projects
+    # give the container access to the host's network
+    network_mode: host
+    # these usb device names are defined on the host using udev rules
+    devices:
+      - /dev/hokuyo:/dev/hokuyo
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      #- /dev/input/js0:/dev/input/js0
+      # - /dev/bus/usb:/dev/bus/usb
+    entrypoint: /entrypoint.sh -w "$WORKSPACE" -u "$UID_GID" -n "$UNAME"

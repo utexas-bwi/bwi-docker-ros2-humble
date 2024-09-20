@@ -1,0 +1,34 @@
+bwi-start-ros2(){
+    xhost +si:localuser:root
+    echo "added docker xhost permissions"
+    export UID_GID=$(id -u):$(id -g)
+    export UNAME=$(whoami)
+    echo "gathering host user info... $UNAME $UID_GID"
+    docker compose up -d
+}
+
+bwi-stop-ros2(){
+    docker compose down
+}
+
+bwi-shell-ros2() {
+    docker exec -ti bwi_system_c_ros2 bash -l
+}
+
+bwi-build-ros2() {
+    docker compose build
+}
+
+bwi-ws-ros2() {
+    if [ $1 == "clear" ]; then \
+    export WORKSPACE=; else \
+    export WORKSPACE=/root/projects/$1; fi
+}
+
+postgres_pw_setup-ros2() {
+    cat > ~/.pgpass <<EOF
+# hostname:port:database:username:password
+localhost:*:knowledge_base:postgres:nopass
+EOF
+    chmod 600 ~/.pgpass
+}
