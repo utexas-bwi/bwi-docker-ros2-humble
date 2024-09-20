@@ -1,6 +1,5 @@
 # bwi-docker-ros2-humble
 
-## Requriements:
 - <code>nano ~/.bashrc </code>
 - Add the following line: <code> source ~/bwi-docker-ros2/bash-tools-ros2 </code>
 - <code>source ~/.bashrc </code>
